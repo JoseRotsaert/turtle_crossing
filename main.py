@@ -9,20 +9,31 @@ screen.setup(width=600, height=600)
 screen.tracer(0)
 
 player = Player()
-car = CarManager()
+carmanager = CarManager()
+scoreboard = Scoreboard()
 
 screen.listen()
 screen.onkey(key="Up", fun=player.move_up)
 
-start = 0
+level = 0
 
 game_is_on = True
 while game_is_on:
-    start += 1
+
     time.sleep(0.1)
     screen.update()
-    car.create_car()
-    car.move_cars()
-    print(start)
+    carmanager.create_car()
+    carmanager.move_cars()
+
+    # detect collision with car
+    for car in carmanager.all_cars:
+        if car.distance(player) < 20:
+            game_is_on = False
+            scoreboard.game_over()
+
+    # detect successfully passing
+    if player.is_at_finishline():
+        player.go_to_start()
+        carmanager.level_up()
 
 screen.exitonclick()
